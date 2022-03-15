@@ -19,8 +19,10 @@
     "url": "git+https://github.com/mrquentin/components-cli.git"
   },
   "dependencies": {
+    "@manypkg/find-root": "^1.1.0",
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
+    "find": "^0.3.0",
     "inquirer": "^8.2.1",
     "nanospinner": "^1.0.0",
     "path": "^0.12.7",

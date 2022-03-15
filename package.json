@@ -1,6 +1,6 @@
 {
   "name": "@mrquentin/components-cli",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A simple CLI tool to generate Components boilerplate for my library",
   "main": "./build/cli.js",
   "bin": "./build/cli.js",
@@ -10,7 +10,6 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "homepage": "https://github.com/mrquentin/components-cli#readme",
   "bugs": {
     "url": "https://github.com/mrquentin/components-cli/issues"
@@ -19,7 +18,6 @@
     "type": "git",
     "url": "git+https://github.com/mrquentin/components-cli.git"
   },
-
   "dependencies": {
     "chalk": "^5.0.1",
     "clear": "^0.1.0",

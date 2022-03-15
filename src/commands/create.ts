@@ -1,12 +1,12 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { findRootSync } from "@manypkg/find-root";
 import yargs from "yargs";
-import { existsSync, lstatSync, readdirSync } from "fs";
+import { existsSync, lstatSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
 type Options = {
     name: string,
-    path: string
+    path: string | undefined,
 }
 
 export const command: string = 'create <name> [options]'
@@ -26,14 +26,15 @@ export const handler = (argv: Arguments<Options>): void => {
     if (!argv.isTs) argv.isTs = containFiles(root, [".tsx", ".ts"])
     if (!argv.isScss) argv.isScss = containFiles(root, ".scss")  
 
-    generateFiles()
+    generateFiles(argv)
     updateIndexes()
     
     process.exit(0)
 }
 
-const generateFiles = (): void => {
-
+const generateFiles = (argv: Arguments<Options>): void => {
+    var path = (argv.path) ? argv.path : process.cwd()
+    console.log(path);   
 }
 
 const updateIndexes = (): void => {

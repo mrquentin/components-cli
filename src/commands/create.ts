@@ -1,8 +1,8 @@
-import type { Arguments, CommandBuilder } from "yargs";
+import { Arguments, CommandBuilder, commandDir } from "yargs";
 import { findRootSync } from "@manypkg/find-root";
-import yargs from "yargs";
-import { existsSync, lstatSync, readdirSync, writeFileSync } from "fs";
+import { existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
+import { pascalCase } from "pascal-case";
 
 type Options = {
     name: string,
@@ -25,6 +25,7 @@ export const handler = (argv: Arguments<Options>): void => {
 
     if (!argv.isTs) argv.isTs = containFiles(root, [".tsx", ".ts"])
     if (!argv.isScss) argv.isScss = containFiles(root, ".scss")  
+    if (!argv.name) process.exit(1)
 
     generateFiles(argv)
     updateIndexes()
@@ -34,11 +35,38 @@ export const handler = (argv: Arguments<Options>): void => {
 
 const generateFiles = (argv: Arguments<Options>): void => {
     var path = (argv.path) ? argv.path : process.cwd()
-    console.log(path);   
+    
+    var componentName = pascalCase(argv.name)
+    var componentDir = join(path, componentName)
+    mkdirSync(componentDir) //Create component Directory
+
+    //Main component file
+    var componentFile = join(componentDir, `${componentName}.${argv.isTs ? 'tsx' : 'js'}`)
+    var componenrFileContent = (argv.isTs) ? componentContent.ts: componentContent.js
+    writeFileSync(componentFile, componenrFileContent)
+
+    //Component Style file
+    var componentStyleFile = join(componentDir, `${componentName}.${argv.isScss ? 'scss': 'css'}`)
+    writeFileSync(componentStyleFile, "")
+
+    //Component Story file
+    var componentStoryFile = join(componentDir, `${componentName}.stories.${argv.isTs ? 'tsx' : 'js'}`)
+    var componentStoryFileContent = (argv.isTs) ? componentStoryContent.ts: componentStoryContent.js
+    writeFileSync(componentStoryFile, componentStoryFileContent)
+
+    //Component Test file
+    var componentTestFile = join(componentDir, `${componentName}.test.${argv.isTs ? 'tsx' : 'js'}`)
+    var componentTestFileContent = (argv.isTs) ? componentTestContent.ts: componentTestContent.js
+    writeFileSync(componentTestFile, componentTestFileContent)
+
+    //Index file
+    var componentIndexFile = join(componentDir, `index..${argv.isTs ? 'ts' : 'js'}`)
+    var componentIndexFileContent = (argv.isTs) ? componentIndexContent.ts: componentIndexContent.js
+    writeFileSync(componentIndexFile, componentIndexFileContent)
 }
 
 const updateIndexes = (): void => {
-
+    //TODO: implement index update
 }
 
 const containFiles = (startPath:string, filter: string | string[]): boolean => {
@@ -65,4 +93,24 @@ const shouldExclude = (file:string): boolean => {
     if (file[0] == '.') return true
     if (excludeDir.indexOf(file) != -1) return true
     return false;
+}
+
+const componentContent = {
+    ts: `//typescript component here`,
+    js: `//javascript component here`
+}
+
+const componentStoryContent = {
+    ts: `//typescript component story here`,
+    js: `//javascript component story here`
+}
+
+const componentTestContent = {
+    ts: `//typescript component test here`,
+    js: `//javascript component test here`
+}
+
+const componentIndexContent = {
+    ts: `//typescript index here`,
+    js: `//javascript index here`
 }

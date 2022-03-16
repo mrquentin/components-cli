@@ -41,8 +41,8 @@ const generateFiles = (argv: Arguments<Options>): void => {
     mkdirSync(componentDir) //Create component Directory
 
     //Main component file
-    var componentFile = join(componentDir, `${componentName}.${argv.isTs ? 'tsx' : 'js'}`)
-    var componenrFileContent = (argv.isTs) ? componentContent.ts: componentContent.js
+    var componentFile = join(componentDir, `${componentName}.${argv.isTs ? 'tsx' : 'jsx'}`)
+    var componenrFileContent = generateComponentContent(argv)
     writeFileSync(componentFile, componenrFileContent)
 
     //Component Style file
@@ -50,23 +50,26 @@ const generateFiles = (argv: Arguments<Options>): void => {
     writeFileSync(componentStyleFile, "")
 
     //Component Story file
-    var componentStoryFile = join(componentDir, `${componentName}.stories.${argv.isTs ? 'tsx' : 'js'}`)
-    var componentStoryFileContent = (argv.isTs) ? componentStoryContent.ts: componentStoryContent.js
+    var componentStoryFile = join(componentDir, `${componentName}.stories.${argv.isTs ? 'tsx' : 'jsx'}`)
+    var componentStoryFileContent = generateComponentStoryContent(argv)
     writeFileSync(componentStoryFile, componentStoryFileContent)
 
     //Component Test file
-    var componentTestFile = join(componentDir, `${componentName}.test.${argv.isTs ? 'tsx' : 'js'}`)
-    var componentTestFileContent = (argv.isTs) ? componentTestContent.ts: componentTestContent.js
+    var componentTestFile = join(componentDir, `${componentName}.test.${argv.isTs ? 'tsx' : 'jsx'}`)
+    var componentTestFileContent = generateComponentTestContent(argv)
     writeFileSync(componentTestFile, componentTestFileContent)
 
     //Index file
     var componentIndexFile = join(componentDir, `index..${argv.isTs ? 'ts' : 'js'}`)
-    var componentIndexFileContent = (argv.isTs) ? componentIndexContent.ts: componentIndexContent.js
+    var componentIndexFileContent = generateComponentIndexContent(argv)
     writeFileSync(componentIndexFile, componentIndexFileContent)
 }
 
 const updateIndexes = (): void => {
     //TODO: implement index update
+    var str = "{0} test {1}, {0}"
+    console.log(formatString(str, "zero", "un"));
+    
 }
 
 const containFiles = (startPath:string, filter: string | string[]): boolean => {
@@ -95,22 +98,47 @@ const shouldExclude = (file:string): boolean => {
     return false;
 }
 
+const formatString = (str: string, ...val: string[]): string => {
+    var result = str
+    val.forEach((value, index) => result = result.replace(new RegExp(`\\{${index}}`, 'g'), value))
+    return result
+}
+
+const generateComponentContent = (argv: Arguments<Options>): string => {
+    return formatString((argv.isTs) ? componentContent.ts : componentContent.js,
+        pascalCase(argv.name),
+        (argv.isScss) ? "scss" : "css"
+    )
+}
+
 const componentContent = {
-    ts: `//typescript component here`,
-    js: `//javascript component here`
+    ts: `import React from "react"\nimport "./{0}.{1}"\n\nexport interface {0}Props {\n\t//complete your custom props here\n}\n\nconst {0} = (props: {0}Props) => {\n\treturn <></>\n}\n\nexport default {0}`,
+    js: `import React from 'react';\nimport PropTypes from 'prop-types';\nimport "./{0}.{1}";\n\nexport const {0} = ({ ...props }) => {\n\treturn <></>;\n};\n\n{0}.propTypes = {\n\t//Add custom propTypes\n};\n\n{0}.defaultProps = {\n\t//Add default props values\n};`
+}
+
+const generateComponentStoryContent = (argv: Arguments<Options>): string => {
+    return formatString((argv.isTs) ? componentStoryContent.ts : componentStoryContent.js, pascalCase(argv.name))
 }
 
 const componentStoryContent = {
-    ts: `//typescript component story here`,
-    js: `//javascript component story here`
+    ts: `import React from "react"\nimport { ComponentStory, ComponentMeta } from "@storybook/react"\nimport {0} from "./{0}"\n\nexport default {\n\ttitle: "PorfolioComponentLibrary/{0}",\n\tcomponent: {0},\n} as ComponentMeta<typeof {0}>\n\nconst Template: ComponentStory<typeof {0}> = (args) => <{0} {...args} />\n\n//Stories\nexport const BasicStory = Template.bind({})\nBasicStory.args = {\n\t//Add props values for this story\n}`,
+    js: `import React from 'react';\nimport { {0} } from './{0}';\n\nexport default {\n\ttitle: 'PorfolioComponentLibrary/{0}',\n\tcomponent: {0},\n\t// More on argTypes: https://storybook.js.org/docs/react/api/argtypes\n\targTypes: {\n\t\t//Add Custom argTypes here\n\t},\n};\n\nconst Template = (args) => <{0} {...args} />;\n\n//Stories\nexport const BasicStory = Template.bind({});\nBasicStory.args = {\n\t//Add props values for this story\n};`
+}
+
+const generateComponentTestContent = (argv: Arguments<Options>): string => {
+    return formatString((argv.isTs) ? componentTestContent.ts : componentTestContent.js, pascalCase(argv.name))
 }
 
 const componentTestContent = {
-    ts: `//typescript component test here`,
+    ts: `import React from "react"\nimport { render } from "@testing-library/react"\n\nimport {0} from "./{0}"\n\ndescribe("{0}", () => {\n\ttest("renders the {0} component", () => {\n\t\trender(<{0} />)\n\t})\n})`,
     js: `//javascript component test here`
 }
 
+const generateComponentIndexContent = (argv: Arguments<Options>): string => {
+    return formatString((argv.isTs) ? componentIndexContent.ts : componentIndexContent.js, pascalCase(argv.name))
+}
+
 const componentIndexContent = {
-    ts: `//typescript index here`,
+    ts: `export { default } from "./{0}"`,
     js: `//javascript index here`
 }

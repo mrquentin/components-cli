@@ -1,9 +1,9 @@
 {
   "name": "@mrquentin/components-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple CLI tool to generate Components boilerplate for my library",
-  "main": "./build/cli.js",
-  "bin": "./build/cli.js",
+  "main": "./build/components-cli.js",
+  "bin": "./build/components-cli.js",
   "author": "mrquentin",
   "license": "ISC",
   "scripts": {

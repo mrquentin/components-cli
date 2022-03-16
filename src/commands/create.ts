@@ -1,7 +1,7 @@
-import { Arguments, CommandBuilder, commandDir } from "yargs";
+import { Arguments, CommandBuilder } from "yargs";
 import { findRootSync } from "@manypkg/find-root";
-import { existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from "fs";
-import { join } from "path";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from "fs";
+import { join,  } from "path";
 import { pascalCase } from "pascal-case";
 
 type Options = {
@@ -28,7 +28,7 @@ export const handler = (argv: Arguments<Options>): void => {
     if (!argv.name) process.exit(1)
 
     generateFiles(argv)
-    updateIndexes()
+    updateIndexes(argv)
     
     process.exit(0)
 }
@@ -41,8 +41,7 @@ const generateFiles = (argv: Arguments<Options>): void => {
     if (existsSync(componentDir)) {
         console.log(`Cannot create component, a directory with name: ${componentName} already exists !`)
         process.exit(1)
-    }
-    else mkdirSync(componentDir) //Create component Directory
+    } else mkdirSync(componentDir) //Create component Directory
 
     //Main component file
     var componentFile = join(componentDir, `${componentName}.${argv.isTs ? 'tsx' : 'jsx'}`)
@@ -64,16 +63,18 @@ const generateFiles = (argv: Arguments<Options>): void => {
     writeFileSync(componentTestFile, componentTestFileContent)
 
     //Index file
-    var componentIndexFile = join(componentDir, `index..${argv.isTs ? 'ts' : 'js'}`)
+    var componentIndexFile = join(componentDir, `index.${argv.isTs ? 'ts' : 'js'}`)
     var componentIndexFileContent = generateComponentIndexContent(argv)
     writeFileSync(componentIndexFile, componentIndexFileContent)
 }
 
-const updateIndexes = (): void => {
-    //TODO: implement index update
-    var str = "{0} test {1}, {0}"
-    console.log(formatString(str, "zero", "un"));
-    
+const updateIndexes = (argv: Arguments<Options>): void => {
+    var path = (argv.path) ? argv.path : process.cwd()
+
+    var indexPath = join(path, `index.${argv.isTs ? 'ts' : 'js'}`)
+    var indexContent = formatString(`export { default as {0} } from "./{0}"`, pascalCase(argv.name))
+    if (existsSync(indexPath)) appendFileSync(indexPath, indexContent)
+    else writeFileSync(indexPath, indexContent)
 }
 
 const containFiles = (startPath:string, filter: string | string[]): boolean => {

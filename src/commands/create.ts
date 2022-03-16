@@ -1,7 +1,7 @@
 import { Arguments, CommandBuilder } from "yargs";
 import { findRootSync } from "@manypkg/find-root";
-import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from "fs";
-import { join,  } from "path";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join, resolve,  } from "path";
 import { pascalCase } from "pascal-case";
 
 type Options = {
@@ -69,6 +69,7 @@ const generateFiles = (argv: Arguments<Options>): void => {
 }
 
 const updateIndexes = (argv: Arguments<Options>): void => {
+    var root = findRootSync(process.cwd())
     var path = (argv.path) ? argv.path : process.cwd()
 
     var indexPath = join(path, `index.${argv.isTs ? 'ts' : 'js'}`)

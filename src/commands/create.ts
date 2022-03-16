@@ -38,7 +38,11 @@ const generateFiles = (argv: Arguments<Options>): void => {
     
     var componentName = pascalCase(argv.name)
     var componentDir = join(path, componentName)
-    mkdirSync(componentDir) //Create component Directory
+    if (existsSync(componentDir)) {
+        console.log(`Cannot create component, a directory with name: ${componentName} already exists !`)
+        process.exit(1)
+    }
+    else mkdirSync(componentDir) //Create component Directory
 
     //Main component file
     var componentFile = join(componentDir, `${componentName}.${argv.isTs ? 'tsx' : 'jsx'}`)

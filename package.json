@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "A simple cli tool to generate components for my portfolio component library",
   "main": "index.js",
-  "repository": "git@github.com:mrquentin/components-cli-tool.git",
+  "repository": "git@github.com:mrquentin/components-cli.git",
   "author": "MrQuentin <32539717+MrQuentin@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
